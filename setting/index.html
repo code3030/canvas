@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Size</title>
+
+    <!-- JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <style>
+        
+        .canvas {
+            background: #eee;
+            width: 100%;
+            height: 600px;
+        }
+    </style>
+
+</head>
+
+<body>    
+    <!-- 
+    고해상도 그림을 위해 두배 크기의 캔버스에서 CSS로 절반 줄여서 사용한다. 
+    전체화면일 경우 윈도우의 전체사이즈 2배를 적용시킨 다음, CSS에서 100%로 한다.
+    (고해상도일수록 무겁다.)
+    -->
+    <h1>캔버스 사이즈 설정</h1>
+
+    <canvas class="canvas" width="500" height="300"></canvas>
+    
+    <!-- 고해상도 -->
+    <canvas class="canvas canvas2" width="3840" height="1200"></canvas>
+
+    
+    
+
+
+    <script>
+        const canvas = document.querySelector('.canvas');
+        const canvas2 = document.querySelector('.canvas2');
+        const context = canvas.getContext('2d');
+        const context2 = canvas2.getContext('2d');
+        
+        // x 100, y 100
+        context.arc(100, 100, 50, 0, Math.PI*2, false);
+        context2.arc(100, 100, 50, 0, Math.PI*2, false);
+        context.fill();
+        context2.fill();
+        
+
+
+
+    </script>
+
+    
+</body>
+</html>
