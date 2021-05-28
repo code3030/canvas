@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>requestAnimationFrame, setInterval</title>
+
+    <!-- JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <style>
+        .canvas {
+            background: #eee;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas class="canvas" width="500" height="300"></canvas>
+
+
+
+    <script>
+        const canvas = document.querySelector('.canvas');
+        const context = canvas.getContext('2d');
+        let xPos = 10;
+        let count = 0;
+
+
+        // window.requestAnimationFrame() 이란?
+        // 리플로우 크기와 위치가 설정(어떤 계산) -> 계산되는 과정
+        // 리페인트 -> 계산된 결과에 색을 칠해주는 것
+        // 즉, 브라우저에 그리는 일 외에 다른 일이 있기 때문에 그릴 준비(계산)를 기다려주는 것
+        function draw() {
+
+            if (count % 1 === 0) { // 나머지가 0 -> 대략 0.5초, setInterval 처럼 구현
+                context.clearRect(0, 0, canvas.width, canvas.height)
+                context.beginPath()
+                context.arc(xPos, 150, 5, 0, Math.PI*2, false)
+                context.fill()
+                xPos += 1    
+            }
+            count++
+            
+            // Stop 01 (return)
+            if (xPos >= canvas.width - 5) {
+                return
+            }
+
+            // Stop 02 (cancelAnimationFrame)
+            timerId = requestAnimationFrame(draw)
+            if (xPos >= canvas.width - 5) {
+                cancelAnimationFrame(timerId);
+            }
+
+            // draw 호출되서 그린다 -> draw함수 안에 또 draw 호출 -> draw 호출되서 그린다.
+            // 즉, 함수안에서 계속 호출되어 계속 반복된다.
+            // requestAnimationFrame(draw)
+        }
+        // requestAnimationFrame(draw); // 그릴 준비가된 후에 1번 호출
+        draw();
+
+        // Stop 03 (clickStop)
+        canvas.addEventListener('click', () => {
+            cancelAnimationFrame(timerId)
+        })
+
+
+
+        
+        // setInterval        
+        // requestAnimationFrame 보다 프레임 유실이 있고, 환경에 따라 엄청 버벅인다. -> 잘 쓰지 않는 추세
+        // Interval 모바일에 유리하다는 말도 있고, Interval을 조절할 수 있다는게 장점
+        function interval() {
+            context.clearRect(0, 0, canvas.width, canvas.height)
+            context.beginPath()
+            context.arc(xPos, 150, 5, 0, Math.PI*2, false)
+            context.fill()
+            xPos += 1
+        }
+        // setInterval(interval, 500);
+
+        // Stop 01 (clearInterval)
+        // timerId = setInterval(draw, 500);
+
+        // canvas.addEventListener('click', () => {
+        //     clearInterval(timerId)
+        // });
+        
+    </script>
+
+</body>
+</html>
