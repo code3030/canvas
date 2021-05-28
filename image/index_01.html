@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image</title>
+
+    <!-- JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <style>
+        .canvas {
+            background: #eee;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas class="canvas" width="500" height="300"></canvas>
+
+
+
+    <script>
+        const canvas = document.querySelector('.canvas');
+        const context = canvas.getContext('2d');
+        
+        // 이미지 생성
+        // const imgElem = document.createElement('img')
+        const imgElem = new Image();
+        imgElem.src = './ilbuni1.png'
+
+        // 이미지 로드 후에 실행
+        imgElem.addEventListener('load', () => {
+            context.drawImage(imgElem, 50, 50) // (dx, dy)
+            context.drawImage(imgElem, 50, 50, 70, 120) // (dx, dy, dwidth, dheight)
+            // (sx, sy, dx, dy, dwidth, dheight), s = 특정부분만 크롭
+            // (이미지 x좌표, 이미지 y좌표, 이미지 자름(이미지 width,height), 캔버스 x좌표, 캔버스 y좌표, width, height)
+            context.drawImage(imgElem, 100, 100, 200, 200, 0, 0, 100, 100) 
+        })
+
+
+    </script>
+
+</body>
+</html>
