@@ -13,31 +13,123 @@
         .canvas {
             background: #eee;
         }
+        .color-btn {
+            width: 30px;
+            height: 30px;
+            border: 0;
+            border-radius: 50%;
+        }
+        .color-btn:hover { cursor: pointer; }
+        .color-btn[data-color='black'] { background: black; }
+        .color-btn[data-color='red'] { background: red; }
+        .color-btn[data-color='green'] { background: green; }
+        .color-btn[data-color='blue'] { background: blue; }
+        .image-btn {
+            width: 30px;
+            height: 30px;
+            background: url('./ilbuni2.png') no-repeat 50% 50% / cover;
+            border-color: #eee;
+        }
+        .result-image {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 100px;
+            height: 100px;
+            border: 1px solid #eee;
+        }
+        .result-image img {
+            width: 100%;
+            height: 100%;
+        }
     </style>
 </head>
 
 <body>
     <canvas class="canvas" width="500" height="300"></canvas>
+    <!-- 컬러 버튼 -->
+    <div class="control">
+        <button class="color-btn" data-type="color" data-color="black"></button> <!-- 컬러 버튼 -->
+        <button class="color-btn" data-type="color" data-color="red"></button>
+        <button class="color-btn" data-type="color" data-color="green"></button>
+        <button class="color-btn" data-type="color" data-color="blue"></button>
+        <button class="image-btn" data-type="image"></button>  <!-- 이미지 버튼 -->
+        <button class="save-btn">이미지 저장</button> <!-- 이미지 저장 버튼 -->
+        <div class="result-image"></div>
+    </div>
 
 
 
     <script>
-        const canvas = document.querySelector('.canvas');
-        const context = canvas.getContext('2d');
+        // const => 상수 (변하지 않는 값을 선언할때 사용)
+        // let => 변수 (변하는 값)
+        const canvas = document.querySelector('.canvas')
+        const context = canvas.getContext('2d')
+        const control = document.querySelector('.control')
+        const saveBtn = document.querySelector('.save-btn') // 이미지 저장 버튼
+        const resultImage = document.querySelector('.result-image') // 저장 이미지 결과
+        
+        let drawingMode // True일 때만 그리기
+        let brush = 'color' // 'color', 'image'
+        let colorVal = 'black' // 색상
+       
+        
+
+        // 이미지 버튼 미리 생성
+        const imgElem = new Image() 
+        imgElem.src = "./ilbuni2.png"
+
+        function downHandler() {
+            drawingMode = true
+        }
+
+        function upHandler() {
+            drawingMode = false
+        }
 
         // 원하는 위치에 클릭 했을 시 도형 그려진다.
-        function clickHandler(event) {
+        function moveHandler(event) {
+            // drawingMode True일때 그린다.
+            if (!drawingMode) return 
+
+
             // clientY 브라우저 창 기준
             // layerY 캔버스 기준
             // console.log(event.layerY);
-            context.beginPath()
-            context.arc(event.layerX, event.layerY, 10, 0, Math.PI*2, false)
-            context.fill();
+            switch (brush) {
+                case 'color' :
+                    context.beginPath()
+                    context.arc(event.layerX, event.layerY, 10, 0, Math.PI*2, false)
+                    context.fill();
+                    break
+                case 'image' :
+                    context.drawImage(imgElem, event.layerX, event.layerY, 50, 50)
+                    break
+            }
         }
-        
-        canvas.addEventListener('click', clickHandler)
 
+        // 컬러 선택
+        function setColor(event) {
+            brush = event.target.getAttribute('data-type')
+            colorVal = event.target.getAttribute('data-color')
+            context.fillStyle = colorVal; // btn 클릭 시 색변경
+        }
 
+        // 이미지 저장 url
+        function createImage() {
+            const url = canvas.toDataURL('image/png');
+            console.log(url)
+            const imgElem = new Image();
+            imgElem.src = url;
+            resultImage.appendChild(imgElem)
+        }
+
+        // mousemove, click, mousdown, mousedown
+        canvas.addEventListener('mousedown', downHandler)
+        canvas.addEventListener('mousemove', moveHandler)
+        canvas.addEventListener('mouseup', upHandler)
+        control.addEventListener('click', setColor)
+        saveBtn.addEventListener('click', createImage)
 
     </script>
     
