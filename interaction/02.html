@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>interaction</title>
+    <style>
+        canvas {
+            background: #eee;
+        }
+    </style>
+</head>
+<body>
+    <canvas class="canvas" width="600" height="400"></canvas>
+
+    <script>
+        const canvas = document.querySelector('.canvas');
+        const context = canvas.getContext('2d');
+
+        // 네모박스 그려주는 Box Class 생성
+        class Box {
+            constructor(x, y) {
+                this.x = x; // this로 하면 인스턴스 b의 x가 된다.
+                this.y = y;
+            }
+        }
+
+        // 랜덤하게 Box 생성
+        let tempX, tempY
+        for (let i = 0; i < 10; i++) {
+            // Math.random = 1이내 범위
+            tempX = Math.random() * 600 // 600 이내, 숫자 대신 canvas.width
+            tempY = Math.random() * 400 // 400 이내 
+            new Box(,)
+        }
+        // Box 1개 생성
+        // const b = new Box(20, 100);
+    </script>
+</body>
+</html>

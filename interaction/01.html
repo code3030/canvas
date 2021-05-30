@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>interaction</title>
+    <style>
+        canvas {
+            background: #eee;
+        }
+    </style>
+</head>
+<body>
+    <canvas class="canvas" width="600" height="400"></canvas>
+
+
+
+    <script>
+        const canvas = document.querySelector('.canvas')
+        const context = canvas.getContext('2d')
+
+        context.fillRect(200, 200, 100, 100)
+
+        // clientX 브라우저 좌측 상단 기준 
+        // layerX 캔버스 좌측 상단 기준 => 만약 캔버스위에 작은 박스를 찍으면 작은 박스가 기준이 된다.
+        function clickHandler(e) {
+            // console.log(e.clientX, e.clientY)
+            console.log(e.layerX, e.layerY)
+            const x = e.layerX
+            const y = e.layerY
+
+            // 네모 영역 클릭
+            if (x > 200 && 
+                x < 200 + 100 &&
+                y > 200 &&
+                y < 200 + 100) {
+                console.log('x ok')
+            } 
+        }
+
+        canvas.addEventListener('click', clickHandler)
+    </script>
+</body>
+</html>
