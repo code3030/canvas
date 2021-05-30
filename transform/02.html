@@ -26,13 +26,19 @@
       }
 
       function draw() {
-        // context.clearRect(0, 0, canvas.width, canvas.height);
+        // context.clearRect(0, 0, canvas.width, canvas.height); // 지우기
         context.save();
-        context.setTransform(1,0,0,1,0,0);
-        // context.resetTransform();
+        // 변환 초가화
+        // 변환 행렬
+        // 단위행렬 -> 어떤 행렬을 곱하여도 곱한 행렬의 값은 변화가 없다.
+        // [1 0 0] [20]
+        // [0 1 0] [50]
+        // [0 0 1] [1]
+        context.setTransform(1,0,0,1,0,0); 
+        // context.resetTransform(); // 변환 초가화
         context.translate(350, 350);
-        context.scale(scaleValue, scaleValue);
-        context.rotate(toRadian(rotationValue));
+        context.scale(scaleValue, scaleValue); // scale 무조건 왼쪽 위 기준
+        context.rotate(toRadian(rotationValue)); // 회전 
         context.strokeRect(-50, -50, 100, 100);
 
         // context.setTransform(1,0,0,1,0,0);
@@ -44,7 +50,7 @@
         scaleValue += 0.05;
         rotationValue += 1;
 
-        requestAnimationFrame(draw);
+        requestAnimationFrame(draw); // 초당 60번 반복
       }
 
       draw();
