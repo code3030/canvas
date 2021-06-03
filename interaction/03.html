@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>interaction</title>
+    <style>
+        canvas {
+            background: #eee;
+        }
+    </style>
+</head>
+<body>
+    
+    <canvas class="canvas" width="600" height="400">
+    </canvas>
+    
+
+    <script src="box.js"></script>
+    <script src="panel.js"></script>
+    <script src="utils.js"></script>
+    <script>
+        const canvas = document.querySelector('.canvas');
+        const context = canvas.getContext('2d');
+        const boxes = [];
+        const mousePos = {x: 0, y: 0};
+        let selectedBox; 
+        let oX; // panel의 좌표
+        let oY;
+        let panel;
+        let step; // 애플리케이션의 상태(단계) 1 ~ 4
+        let rafId // requestAnimationFrame 담을 변수 => 캔슬하기 위해서
+
+        context.font = 'bold 30px sans-serif';
+
+        // 애니메이션
+        // 반복이 필요한, 반복이 필요없는 것 구분한다.
+        // 항상 Canvas로 작업을 마무리할때 console log 없앤다.
+        function render() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            let box;
+            for (let i = 0; i < boxes.length; i++) {
+                // step2일 때, step1을 멈추게 하기 위해, 기본값은 그려준다
+                box = boxes[i]
+                // box.x += box.speed;
+                // if (box.x > canvas.width) {
+                //     box.x = -box.width;
+                // }
+                box.draw();
+            }
+
+            switch (step) {
+                case 1 :
+                    for (let i = 0; i < boxes.length; i++) {
+                        box = boxes[i]
+                        box.x += box.speed;
+                        if (box.x > canvas.width) {
+                            box.x = -box.width;
+                        }
+                    }
+                    break;
+
+                case 2 :
+                    // panel.scale += 0.02;
+                    // 가속도
+                    // 시작위치 / 목표위치 = 1. 타겟위치에서 얼마나 떨어져있나 계산 후 소수(1\10)를 곱해본다.
+                    // 2. 곱한 거리에서 (1/10)를 곱하면 줄어든 구간의 1/10이기 때문에, 더 작은값은로 줄어든다.
+                    // 3. 결과적으로 목표점에 도달할수록 감속한다.
+                    // 현재크기 = 현재크기 + (목표크기 - 현재크기)*0.1
+                    panel.scale = panel.scale + (1 - panel.scale)*0.1; // scale의 최대크기는 1이기 때문에,
+                    // 회전
+                    // 720 회전을 할때 스케일과 같이 끝나는 지점을 맞추기 위해 스케일 비율과 같게 한다. (0 ~ 720도 사이에서)
+                    // 스케일은 0부터 1까지 갈때 회전은 0부터 720도까지 (전체값에서 비율을 곱해준다.)
+                    // 각도 = 스케일(0~1) * 720;
+                    panel.angle = panel.scale * 720;
+                    panel.draw();
+                    if (panel.scale >= 0.999) {
+                        panel.scale =1;
+                        step = 3;
+                    }
+                    break;
+
+                case 3 :
+                    panel.draw();
+                    break;
+            }
+
+            // window. 전역 객체는 생략 가능하다. => window.requestAnimationFrame(render)
+            rafId = requestAnimationFrame(render);
+            // requestAnimationFrame(render); 실행이 되어야지 갱신이 되니까 그 갱신된 값으로 취소를 하기위해 여기 구문에서 사용
+            // step3이 100이면 지금의 값(rafId)은 101이다.
+            if (step == 3) {
+                panel.showContent();
+                cancelAnimationFrame(rafId);
+            }
+        }
+
+        // 랜덤하게 Box 생성
+        let tempX, tempY, tempSpeed; 
+
+        function init() {
+            step = 1;
+            oX = canvas.width / 2; // panel의 좌표
+            oY = canvas.height / 2;
+
+            for (let i = 0; i < 10; i++) {
+                tempX = Math.random() * canvas.width * 0.8; 
+                tempY = Math.random() * canvas.height * 0.8; 
+                tempSpeed = Math.random() * 4 + 1; 
+                boxes.push(new Box(i, tempX, tempY, tempSpeed));
+            }
+
+            panel = new Panel()
+
+            render();
+        }
+        
+        // 클릭 이벤트
+        canvas.addEventListener('click', e => { 
+            mousePos.x = e.layerX;
+            mousePos.y = e.layerY;
+
+            let box;
+            for (let i = 0; i < boxes.length; i++) {
+                box = boxes[i];
+                if(mousePos.x > box.x &&
+                    mousePos.x < box.x+box.width &&
+                    mousePos.y > box.y &&
+                    mousePos.y < box.y+box.height) {
+                
+                    selectedBox = box;
+                }
+            }
+            if (step == 1 && selectedBox) {
+                // console.log(selectedBox.index);
+                step = 2;
+                // selectedBox = null; // 값 초기화
+            } else if (step == 3 ) {
+                step = 1;
+                panel.scale = 0;
+                selectedBox = null; // 값 초기화
+                render(); // 다시 시작
+            }
+        });
+
+        init();
+    </script>
+</body>
+</html>

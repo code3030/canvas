@@ -17,23 +17,85 @@
     <script>
         const canvas = document.querySelector('.canvas');
         const context = canvas.getContext('2d');
+        const boxes = [];
+        const mousePos = {x: 0, y: 0};
+        let selectedBox; // 클릭된 box
 
-        // 네모박스 그려주는 Box Class 생성
+        context.font = 'bold 30px sans-serif';
+
+        // 네모박스 그려주는 객체(Box Class) 생성
         class Box {
-            constructor(x, y) {
+            constructor(index, x, y, speed) { // 생성자
+                this.index = index; // 해당 Box의 index값을 준다.
                 this.x = x; // this로 하면 인스턴스 b의 x가 된다.
                 this.y = y;
+                this.speed = speed;
+                this.width = 100;
+                this.height = 100;
+                // this.width = width;
+                // this.height = height;
+                this.draw(); // 자동으로 생성하도록 생성자 안에서 호출
+            }
+            
+            // 그려주는 작업
+            draw() { 
+                context.fillStyle = 'rgba(0,0,0,0.5)';
+                context.fillRect(this.x, this.y, 100, 100);
+                context.fillStyle = '#fff';
+                context.fillText(this.index, this.x+30, this.y+30); // (쓸글자, x, y) 
             }
         }
 
+        // 애니메이션
+        function render() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            let box;
+            for (let i = 0; i < boxes.length; i++) {
+                box = boxes[i]
+                box.x += box.speed;
+                if (box.x > canvas.width) {
+                    box.x = -box.width;
+                }
+                box.draw();
+            }
+            requestAnimationFrame(render);
+        }
+
         // 랜덤하게 Box 생성
-        let tempX, tempY
+        let tempX, tempY, tempSpeed; // for문 안에서 변수를 생성하는건 바람직하지 않다. 
         for (let i = 0; i < 10; i++) {
             // Math.random = 1이내 범위
-            tempX = Math.random() * 600 // 600 이내, 숫자 대신 canvas.width
-            tempY = Math.random() * 400 // 400 이내 
-            new Box()
+            tempX = Math.random() * canvas.width * 0.8; // 600 이내, 600의 80%안으로 그려지게끔
+            tempY = Math.random() * canvas.height * 0.8; // 400 이내 
+            // tempWidth = Math.random() * 100 + 10;
+            // tempHeight = Math.random() * 100 + 10;
+            tempSpeed = Math.random() * 4 + 1; // Random() -> 0부터 1 -> 0이 나오면 안되니까 최소값으로 1 그리고 1부터 5사이
+            boxes.push(new Box(i, tempX, tempY, tempSpeed));
         }
+
+        canvas.addEventListener('click', e => { // 화살표함수는 매개변수 하나일때 괄호를 안써도 된다.
+            mousePos.x = e.layerX;
+            mousePos.y = e.layerY;
+
+            let box;
+            for (let i = 0; i < boxes.length; i++) {
+                box = boxes[i];
+                if(mousePos.x > box.x &&
+                    mousePos.x < box.x+box.width &&
+                    mousePos.y > box.y &&
+                    mousePos.y < box.y+box.height) {
+                
+                    selectedBox = box;
+                }
+            }
+            if (selectedBox) {
+                console.log(selectedBox.index);
+                selectedBox = null;
+            }
+        });
+
+        render();
+        // console.log(boxes)
         // Box 1개 생성
         // const b = new Box(20, 100);
     </script>
